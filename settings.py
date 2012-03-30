@@ -1,7 +1,7 @@
 
 ## INFER TOPICS PARAMETERS
 
-DATA_DIR = "data/clean-data"
+DATA_DIR = "data"
 MALLET_INPUT_FILE = "input.mallet"
 INFERENCER_FILE = "inferencer.mallet"
 OUTPUT_STATE = "topic-state.gz"
