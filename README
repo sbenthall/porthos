@@ -1,0 +1,10 @@
+This repository is for tools for studying topic modelling using spam data from Monarch.
+
+It uses MALLET to do the topic inference, using LDA.
+
+## Setup and usage
+
+To execute, first unpack the mallet script:
+tar -xzf mallet-2.0.6.tar-gz
+
+settings.py has the global settings for all the scripts
