@@ -12,9 +12,10 @@ def main():
     print("Extracting in", prefix)
     db=cPickle.load(open('data-all.db', 'r'))
     for key in db:
-        if db[key]['lang']=='en':
-            print(db[key]['clean'].encode('utf8'), 
-                  file=open(prefix+str(db[key]['label'])+" "+key+".txt", "w"))
+        if 'lang' in db[key]:
+            if db[key]['lang']=='en':
+                print(db[key]['clean'].encode('utf8'), 
+                      file=open(prefix+str(db[key]['label'])+" "+key+".txt", "w"))
     exit(0)
 
 if __name__ == "__main__":
