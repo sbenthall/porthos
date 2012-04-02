@@ -42,20 +42,20 @@ model=gensim.models.ldamodel.LdaModel(corpus, id2word=i2w, num_topics=100)
 # <codecell>
 
 topics_all=model.show_topics(100)
-#topics_ham=model.show_topics(25)
-#topics_spam=model.show_topics(25)
+topics_ham=model.show_topics(25)
+topics_spam=model.show_topics(25)
 
 # <codecell>
 
-topics_all
+print topics_all
 
 # <codecell>
 
-topics_ham
+print topics_ham
 
 # <codecell>
 
-topics_spam
+print topics_spam
 
 # <codecell>
 
