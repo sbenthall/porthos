@@ -1,6 +1,7 @@
 from ldasimlib import *
 import cPickle
 import gensim
+import classify
 from zlib import decompress
 
 
@@ -42,6 +43,17 @@ print 'Filtering tweets'
             
 tweet_bags = filter_tweets(tweets,html,w2i,cutoff=2000)
 cPickle.dump(tweet_bags,open('tweet-bags.pkl','w'))
+
+print 'Generating Numpy arrays for spam, tweet topics, and html topics'
+tweet_topic_data, html_topic_data, spam_data = tweet_bags2ldanpy(tweet_bags,ldamodel)
+
+print tweet_topic_data.size
+print html_topic_data.size
+print spam_data.size
+
+print 'Creating LdaSpamClassifier object for testing classifiers'
+classifier = classify.LdaSpamClassifierTester(tweet_topic_data,html_topic_data,spam_data)
+classifier.compute_classifier_success(8)
 
 print 'Computing similarities with LDA Cosine'
 ham,spam = ham_spam_similarities(tweet_bags,lda_cosine,tweets,model)
