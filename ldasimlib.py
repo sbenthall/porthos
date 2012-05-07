@@ -12,9 +12,10 @@ stopwords=text_processing.stopwords
 from text_processing import to_bow
 from zlib import decompress
 from numpy import random, mean, save
+from numpy import array,zeros,ones,dot
 from math import sqrt
 from pylab import hist, legend, title, xlabel, ylabel, show, savefig, clf
-
+import itertools
 
 #set of interesting htmls to consider
 def candidates(html,w2i):
@@ -117,7 +118,11 @@ def filter_tweets(tweets,html,w2i,cutoff=1000):
                 if len(tw)>= 1 and len(html[key])>0: 
                     ht=to_nbow(decompress(html[key][0]),w2i)
                     if len(ht)>=1:
-                        good_tweet_bags[key] = (tw,ht)
+                        good_tweet_bags[key] = {
+                            "is_spam": tweets[key]['label']==1,
+                            "tw": tw,
+                            "ht": ht 
+                            }
     return good_tweet_bags
 
 def ham_spam_similarities(tweet_bags,bow_sim,tweets,model='dummy'):
@@ -125,9 +130,10 @@ def ham_spam_similarities(tweet_bags,bow_sim,tweets,model='dummy'):
     spam=[]
     ham=[]
     for key in tweet_bags:
-        tw, ht = tweet_bags[key]
+        tw = tweet_bags[key]["tw"]
+        ht = tweet_bags[key]["ht"]
         sim = bow_sim(tw,ht,model)
-        if tweets[key]['label']==1:
+        if tweet_bags[key]["is_spam"]:
             spam.append(sim)
         else:
             ham.append(sim)
