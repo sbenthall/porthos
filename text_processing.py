@@ -26,6 +26,7 @@ stopwords=stopwords.union(set([chr(97+x) for x in range(26)]))
 stopwords=stopwords.union(set('rt st lt pm rd gt ur ya'.split(' ')))
 stopwords=stopwords.union(set('iframe web ww img com about http link comment home email share sign other video ago reply view picture add added views minutes hours days comments october september sep oct time times report feed rss site website terms post posted service alternate list lists abuse ft fc'.split(' ')))
 
+# to bag of words
 def to_bow(text, to_keep):
     bag={}
     for w in twochars.findall(unidecode(text.lower()).replace("'", '')):

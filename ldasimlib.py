@@ -32,15 +32,22 @@ def candidates(html,w2i):
 def to_nbow(text,w2i):
     return [[w2i[x[0]], x[1]] for x in to_bow(text, w2i).items() if x[0] not in stopwords]
 
-def build_corpus(pcandidates,w2i):
+## TODO: rewrite for streaming
+## -- see gensim documentation for how to build this
+def build_corpus(candidates,w2i,cutoff=10000):
+    random.seed(0)
+    candidates=random.permutation(list(candidates))
     corpus=[]
-    for key in pcandidates[:10000]:
+    for key in pcandidates[:cutoff]:
         for comp in html[key]:
             corpus.append(to_nbow(decompress(comp)),w2i)
     return corpus
 
 #compute cosine similarity of two vectors x and y
 def cosine(x, y):
+    if len(x) == 0 or len(y) == 0:
+        return 0
+
     Nx=0
     Ny=0
     num=0
@@ -89,8 +96,7 @@ def jaccard(tw,ht,model='dummy'):
 
 # compute TF-IDF cosine similarity between two bags of words
 def tfidfcosine(tw,ht,tfidfmodel):
-    import pdb; pdb.set_trace()
-    return cosine(tfidfmodel[tw],tfidfmodel[ht])
+    return cosine(sorted(tfidfmodel[tw]),sorted(tfidfmodel[ht]))
 
 # returns a dictionary with keys from the 
 # tweets dictionary and values that are
@@ -139,22 +145,3 @@ def make_cdf(ham,spam,similarity_name):
     show()
     clf()
 
-'''
-for key in tweets:
-    if tweets[key]['lang_infered']=='en':
-        if tweets[key]['label']==0:
-            print(tweets[key]['text_original'])
-
-
-save('gammas-spam-ham', full_matrix)
-save('labels', labels)
-
-
-[i2w[x[0]] for x in corpus[0]]
-
-model_all.show_topics(25)
-
-len(stopwords)
-
-stopwords
-'''

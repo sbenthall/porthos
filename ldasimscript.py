@@ -14,13 +14,9 @@ html=cPickle.load(open('html.db', 'r'))
 #print 'Computing candidates'
 #candidates = candidates(html,w2i)
 
-#print 'Permuting candidates'
-#random.seed(0)
-#pcandidates=random.permutation(list(candidates))
-
 #print 'Building corpus'
 
-#corpus = build_corpus(pcandidates)
+#corpus = build_corpus(candidates)
 #print 'Saving corpus'
 #cPickle.dump(corpus,open('corpus.pkl','w'))
 
