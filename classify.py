@@ -55,7 +55,7 @@ class LdaSpamClassifierTester:
         
         print "Results are in!"
     
-        accurate_test_results = [label == ('spam' if sm[testing_indices[i]] else 'ham') for i,label in enumerate(test_results)]
+        accurate_test_results = [label == ('spam' if self.sm[testing_indices[i]] else 'ham') for i,label in enumerate(test_results)]
         return test_results, accurate_test_results
 
     def ratio(self,data):
@@ -69,12 +69,12 @@ class LdaSpamClassifierTester:
             classifier = self.train(train_i)
             results, accuracy = self.test(classifier, test_i)
             
-            print ratio(accuracy)
-            ratios.append(ratio(accuracy))
+            print self.ratio(accuracy)
+            ratios.append(self.ratio(accuracy))
                 
         mean_success = numpy.mean(ratios)
         
         print "Average ratio: " + str(mean_success)
-        print "Spam rate: " + str(0.0 + sum(sm) / sm.size )
+        print "Spam rate: " + str(0.0 + sum(self.sm) / self.sm.size )
         
         return mean_success

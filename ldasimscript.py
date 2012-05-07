@@ -31,12 +31,12 @@ corpus = cPickle.load(open('corpus.pkl','r'))
 #model.save('model.pkl')
 
 print 'Loading LDA model'
-model = gensim.models.ldamodel.LdaModel.load('model.pkl')
+ldamodel = gensim.models.ldamodel.LdaModel.load('model.pkl')
 
 print 'Generating TF-IDF model'
 tfidfmodel = gensim.models.tfidfmodel.TfidfModel(corpus)
 
-print 'Loadinging tweets'
+print 'Loading tweets'
 tweets=cPickle.load(open('tweets+.db', 'r'))
 
 print 'Filtering tweets'
@@ -56,7 +56,7 @@ classifier = classify.LdaSpamClassifierTester(tweet_topic_data,html_topic_data,s
 classifier.compute_classifier_success(8)
 
 print 'Computing similarities with LDA Cosine'
-ham,spam = ham_spam_similarities(tweet_bags,lda_cosine,tweets,model)
+ham,spam = ham_spam_similarities(tweet_bags,lda_cosine,tweets,ldamodel)
 make_cdf(ham,spam, 'lda cosine')
 
 print 'Computing similarities with Jaccard'
