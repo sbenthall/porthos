@@ -20,59 +20,61 @@ class LdaSpamClassifierTester:
         self.htm = htm
         self.sm = sm
     
-        def features(i):
-            return dict([t for t in enumerate(self.ttm[i,:])])
+    def features(self,i):
+        return dict([t for t in enumerate(self.ttm[i,:])])
 
-        def training_example(i):
-            label = "spam" if self.sm[i] else "ham"
-            return (self.features(i), label)
+    def training_example(self,i):
+        label = "spam" if self.sm[i] else "ham"
+        return (self.features(i), label)
 
-        def sample_indices(training_ratio=TRAINING_RATIO):
-            n_training = int(self.sm.size * training_ratio)
-            print "Training on %s, Testing on %s" % (n_training, self.sm.size)
-            print "Selecting training and testing indices"
-            permuted_indices = numpy.random.permutation(self.sm.size)
-            training_indices = numpy.arange(self.sm.size)[permuted_indices[n_training:]]
-            testing_indices = numpy.arange(self.sm.size)[permuted_indices[:n_training]]
-            return training_indices, testing_indices
+    def sample_indices(self,training_ratio=TRAINING_RATIO):
+        n_training = int(self.sm.size * training_ratio)
+        print "Training on %s, Testing on %s" % (n_training, self.sm.size)
+        print "Selecting training and testing indices"
+        permuted_indices = numpy.random.permutation(self.sm.size)
+        training_indices = numpy.arange(self.sm.size)[permuted_indices[n_training:]]
+        testing_indices = numpy.arange(self.sm.size)[permuted_indices[:n_training]]
+        return training_indices, testing_indices
 
         #train classifier on specified indices of the training set
-        def train(training_indices,):
-            # using all data for now
-            print "Creating training set"
-            training_set = [training_example(i) for i in training_indices]
+    def train(self,training_indices):
+        # using all data for now
+        print "Creating training set"
+        training_set = [self.training_example(i) for i in training_indices]
     
-            print "Training"
-            classifier = nltk.NaiveBayesClassifier.train(training_set)
-            return classifier
+        print "Training"
+        classifier = nltk.NaiveBayesClassifier.train(training_set)
+        return classifier
 
-        def test(classifier, testing_indices):
-            print "Creating testing set"
-            testing_set = [(features(i)) for i in testing_indices]
+    def test(self,classifier, testing_indices):
+        print "Creating testing set"
+        testing_set = [(self.features(i)) for i in testing_indices]
 
-            print "Testing"
-            test_results = classifier.batch_classify(testing_set)
-            print "Results are in!"
+        print "Testing"
+        test_results = classifier.batch_classify(testing_set)
+        
+        print "Results are in!"
     
-            accurate_test_results = [label == ('spam' if sm[testing_indices[i]] else 'ham') for i,label in enumerate(test_results)]
-            return test_results, accurate_test_results
+        accurate_test_results = [label == ('spam' if sm[testing_indices[i]] else 'ham') for i,label in enumerate(test_results)]
+        return test_results, accurate_test_results
 
-        def ratio(data):
-            return float(sum(data)) / len(data)
+    def ratio(self,data):
+        return float(sum(data)) / len(data)
 
-        def compute_classifier_success(n_for_validation=N):
-            ratios = []
+    def compute_classifier_success(self,n_for_validation=N):
+        ratios = []
 
-            for n in range(N):
-                train_i, test_i = self.sample_indices()
-                classifier = self.train(train_i)
-                results, accuracy = self.test(classifier, test_i)
-                print ratio(accuracy)
-                ratios.append(ratio(accuracy))
+        for n in range(N):
+            train_i, test_i = self.sample_indices()
+            classifier = self.train(train_i)
+            results, accuracy = self.test(classifier, test_i)
+            
+            print ratio(accuracy)
+            ratios.append(ratio(accuracy))
                 
-            mean_success = numpy.mean(ratios)
-
-            print "Average ratio: " + str(mean_success)
-            print "Spam rate: " + str(0.0 + sum(sm) / sm.size )
-
-            return mean_success
+        mean_success = numpy.mean(ratios)
+        
+        print "Average ratio: " + str(mean_success)
+        print "Spam rate: " + str(0.0 + sum(sm) / sm.size )
+        
+        return mean_success
