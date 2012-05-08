@@ -265,7 +265,7 @@ For example, we normalized "hahahahaha" and its variants to "haha".
 \subsubsection{Rendering HTML}
 
 In order to extract linguistic content from HTML documents that otherwise contain technical markup unexpected by LDA,
-we rendered the HTML using the text-based browser Lynx before tokenizing.
+we rendered the HTML using the text-based browser ELinks before tokenizing.
 
 \subsubsection{URL removal}
 
@@ -462,7 +462,13 @@ solutions when appropriate.
 	\hline
 	# of cases & description & solution \\
 	\hline
-
+	3 & links minimalist landing page &
+	\hline
+	2 & tweet hawking merchandise, linked page is related & -
+	\hline
+	1 & sports betting  & - \\
+	\hline
+	1 & dubious employment opportunity  & - \\
 	\hline
 	\end{tabular}
 	\caption{Cases of spam tweets with similarity scores $>0.9$.}
