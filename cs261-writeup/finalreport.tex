@@ -18,6 +18,7 @@
 
 \DeclareMathOperator*{\bow}{bow}
 \DeclareMathOperator*{\simil}{sim}
+\DeclareMathOperator*{\cosine}{cosine}
 
 
 %\pagestyle{empty}
@@ -327,7 +328,42 @@ The naive Jaccard measure between a tweet $T$ and its linked HTML content $H$ is
 where $\bow$ is the bag-of-wording function which takes a string and returns a set of normalized tokens with stop words removed. This measure is expected to perform relatively poorly because of the sparse, high dimensional nature of the bag of words. We expect a lot of blunt 0 and 1 values for this metric.
 
 \subsubsection{TF-IDF normalized cosine measure}
-The TF-IDF distance 
+The cosine TF-IDF distance between two sets of words is the cosine distance between 
+the corresponding vectors, where instead of using the plain number of times the 
+token appears in the document (the HTML content), one use a weighted value. 
+More precisely, the weight of the terms in the query are still 
+proportional to the number of times they appear, however the weight of a token
+in a document is equal to the logarithm of the inverse document frequency for that
+term, e.g. the number of documents divided by the number of documents containing
+the term.
+
+We write:
+\[
+	\simil_{TFIDF}(T, H) = \cosine (\Pi^{T}[\bow(T)], \Pi^{H}[\bow(H)])
+\]
+where $\Pi^T$ and $\Pi^H$ are the projections of the bag of words into TF-IDF
+weighted vectors as defined above. Again, there is no dimensionality reduction 
+occurring for this measure, so that we expect the same bimodal behavior as previously.
+
+\subsubsection{$k$-topics LDA with cosine similarity}
+We derive a classic LDA-based similarity measure as follows. We first train a $k$-topics LDA model
+on the whole corpus of HTML documents, and this is a completely unsupervised learning procedure. 
+In particular, this effectively creates a projection $\Pi^{LDA}$ from the bag-of-words to low 
+dimensional $k$-components vectors. We then use the cosine similarity to create the complete measure:
+\[
+	\simil_{LDA}(T, H) = \cosine (\Pi^{LDA}[\bow(T)], \Pi^{LDA}[\bow(H)])
+\]
+
+In contrast to the previous two measures, the LDA cosine measure is parametrized by $k$ and more importantly,
+is non-deterministic as the inference algorithm used in our implementation at least is stochastic. However,
+for large enough datasets, there is no noticeable difference in the aggregated values we obtain.
+
+\subsection{Choosing the best similarity measure}
+We now turn to the evaluation of each similarity measure. To this end, we will make the assumption (and later
+validate) that ham tweets are less deceptive than spam tweets. Keeping this in mind, we simply seek the similarity
+measure which maximizes the Area Under the Curve of the induced thresholded classified, e.g. 
+the classifier which outputs \verb SPAM  if and only if the similarity measure is below a fixed threshold 
+$\tau$. Another way to understand the AUC measure is basically th
 
 \begin{table}[!h]\centering
 	\begin{tabular}{|c|p{1.5cm}|p{1cm}|p{1cm}|p{1cm}|}
