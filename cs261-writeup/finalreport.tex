@@ -27,13 +27,65 @@ University of California, Berkeley \\
 
 \section{Introduction}
 
+Links can hold surprises.
+In social media especially, users encounter links in fleeting messages that may contain little context.
+This environment enables deception in the presentation of links.
+Socially, deception can be a game, as in the rick-rolling prank, whereby a user claims to be sharing a serious article but instead links to a dated music video.
+Is link deception used in spam and cybercrime?
+Our study investigates this connection in the context of Twitter.
+
+We operationalize deception as the similarity between a message (tweet) containing a link and the content of the HTML to which the link resolves.
+As deception involves an element of subjective interpretation, we first use an algorithmic method of approximating latent semantic structure: topic modeling.
+Topic models provide a means for dimensionality reduction of lexical features (words) in a way can capture interpretable categories of content.
+
+Our guiding hypothesis is that spammy or criminal tweets will have more dissonance between their contextual information and linked content.
+We test this hypothesis using data provided by the Monarch project.
+
+Vern says: The big question I had concerns
+the future work, for which you frame two possible approaches, grouping
+tweets or using text extracted from the crawl, and state you're prioritizing
+the former.  My sense of what was particularly interesting about this
+project was the possibility of the latter, i.e., identifying dissonance
+between tweet topic and web page content.  What has you thinking of not
+pursuing that but instead grouping tweets?
+
 \section{Prior Work}
 
 \section{The dataset}
 
+Monarch data
+
+
+
 \section{Language detection for tweets}
 
 \section{Topic modeling on twitter}
+
+Data cleaning 
+
+stopword removal
+
+
+
+Vern says: Your writeup should make some things clear that here weren't so much, such as just what constitutes a "document" (a single tweet? that appeared to be the meaning), how LDA works (don't assume I know - because I don't!), what you mean by "parsity" (sparsity?), and what the reader is supposed to make of the      LDA output in the appendix.
+
+Our  goal for the first segment of our research was to train a classifier  based on learned topics from the data and troubleshoot the process along  the way.
+
+We received a sample of the Monarch data from Chris Grier, and limited our study to Twitter data (as opposed to emails).  In order to limit our preliminary results to those that we could interpret, we further filtered this data to include only English language tweets.  We detected tweet language by computing lexical compressibility against corpuses of English, French, Chinese, and other languages.
+
+Focusing on the tweet messages themselves, we cleaned this data by generating a list of stopwords based on commonly used English stopwords as well as informally based on observed term frequency in order to account for the peculiarities of Twitter lexical feature frequency.
+
+Running the standard LDA algorithm on these short messages produced two results:
+	* A list of topics, labeled with 'topic keys'  the most prominent words used in the topics
+	* An inferred distribution of topics per document
+    
+The results from the topic keys were promising, with several of the topics corresponding to domain knowledge of what constitutes spam.  For example. one topic was characterized by these keywords:
+
+news world iphone win tv apple google watch ipad ap hey  app price search sports click buy giveaway case ipod late shows gb touch  tech test year deal series 
+
+Using the topic distribution for each document as a feature vector, we trained a naive Bayes classifier and tested its spam detection accuracy against the labeled data, using n-fold cross validation.
+
+The performance of this classifier was underwhelming (.57 accuracy against a spam base rate of .73).  However, this is unsurprising given the parsity of data we were using for this particular iteration.
 \subsection{Clean-up process}
 
 \section{Detecting deceptive tweets}

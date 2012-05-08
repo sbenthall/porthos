@@ -19,7 +19,10 @@ class LdaSpamClassifierTester:
         self.sm = sm
     
     def features(self,i):
-        return dict([t for t in enumerate(self.tm[i,:])])
+        if len(self.tm.shape) == 1:
+            return {"1": self.tm[i]}
+        else:
+            return dict([t for t in enumerate(self.tm[i,:])])
 
     def training_example(self,i):
         label = "spam" if self.sm[i] else "ham"
@@ -47,9 +50,6 @@ class LdaSpamClassifierTester:
         accurate_test_results = [label == ('spam' if self.sm[testing_indices[i]] else 'ham') for i,label in enumerate(test_results)]
         return test_results, accurate_test_results
 
-    def ratio(self,data):
-        return float(sum(data)) / len(data)
-
     def compute_classifier_success(self,n_for_validation=N):
         ratios = []
 
@@ -57,8 +57,8 @@ class LdaSpamClassifierTester:
             train_i, test_i = self.sample_indices()
             classifier = self.train(train_i)
             results, accuracy = self.test(classifier, test_i)
-            
-            ratios.append(self.ratio(accuracy))
+            import pdb; pdb.set_trace()
+            ratios.append(numpy.mean(accuracy))
                 
         mean_success = numpy.mean(ratios)
         
