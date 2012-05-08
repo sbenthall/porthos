@@ -36,29 +36,13 @@ Our study investigates this connection in the context of Twitter.
 
 We operationalize deception as the similarity between a message (tweet) containing a link and the content of the HTML to which the link resolves.
 As deception involves an element of subjective interpretation, we first use an algorithmic method of approximating latent semantic structure: topic modeling.
-Topic models provide a means for dimensionality reduction of lexical features (words) in a way can capture interpretable categories of content.
+Topic models provide a means for dimensionality reduction of lexical features (words) in a way can capture interpretable categories of content.\cite{Blei2003}
 
 Our guiding hypothesis is that spammy or criminal tweets will have more dissonance between their contextual information and linked content.
-We test this hypothesis using data provided by the Monarch project.
+We test this hypothesis using data provided by the Monarch project.\cite{Thomas2011}
+This data bundles information about tweets containing links with the crawled HTML of the pages linked to.
+These bundles are labeled as spam or ham based on the links' presence on a URL blacklist.
 
-Vern says: The big question I had concerns
-the future work, for which you frame two possible approaches, grouping
-tweets or using text extracted from the crawl, and state you're prioritizing
-the former.  My sense of what was particularly interesting about this
-project was the possibility of the latter, i.e., identifying dissonance
-between tweet topic and web page content.  What has you thinking of not
-pursuing that but instead grouping tweets?
-
-\section{Prior Work}
-
-\section{Notes on the proposal}
-In our work, we hope to improve classification accuracy of Monarch by deriving higher-level content features from those that Monarch collects. The two main advantages of topic modelling with LDA over other methods of processing text for classification based on word frequency are:
-\begin{enumerate}
-\item the identification of synonyms and disambiguation of homographs based on document context
-\item the explanatory power of the reduced feature space, which often captures intuitive categories of behavior or communication. 
-\end{enumerate}
-We expect that LDA will learn categories of activity that we pick out with ease perceptually, such as Viagra ads, consumer electronics affiliates, and domain squatting.
-We aim to apply LDA to the content features of the messages and crawled URLs in the available data to derive new features for spam filtering. 
 
 \section{Related Work}
 \subsection{Spam Detection}
@@ -76,15 +60,59 @@ Very close to our project proposal, \cite{Kim2011} apply LDA to identify solicit
 
 \section{The dataset}
 
-Monarch data
+The Monarch data we used consisted of records that bundled data from Twitter with information about crawled URLs, labeled with whether or not the URL was blacklisted.
+These bundles included a wealth of metadata and envelop information that we were unable to explore thoroughly in the context of our study.
+For example, the Twitter metadata included the information made available through the service's API, including profile information of the sending user.
+This metadata included a field for the senders' language which proved an unreliable indicator of the language of the tweet message.
 
+We distilled a subset of the features of this data for our study.
+Focusing on content features, we examined records for the tweet messages and crawled HTML content.
+A small number of records contained more than one HTML page per tweet message.
+We included these additional HTML pages in our corpus for the purpose of model training but left them out of similarity computations.
 
+[info about data timing etc. here]
 
 \section{Language detection for tweets}
 
 In order to limit our preliminary results to those that we could interpret, we further filtered this data to include only English language tweets.  We detected tweet language by computing lexical compressibility against corpuses of English, French, Chinese, and other languages.
 
 \section{Topic modeling on twitter}
+
+We began our study with the hope to improve classification accuracy of Monarch by deriving higher-level content features from those that Monarch collects.
+The two main advantages of topic modeling with LDA over other methods of processing text for classification based on word frequency are:
+\begin{enumerate}
+\item the identification of synonyms and disambiguation of homographs based on document context
+\item the explanatory power of the reduced feature space, which often captures intuitive categories of behavior or communication. 
+\end{enumerate}
+We expected that LDA will learn categories of activity that we pick out with ease perceptually, such as Viagra ads, consumer electronics affiliates, and domain squatting.
+We aimed to apply LDA to the content features of the messages and crawled URLs in the available data to derive new features for spam filtering.
+
+At a high level, topic modeling with LDA involves:
+\begin{enumerate}
+\item Preparing corpus data to be consumed by LDA
+\item Training the topic model on the corpus.  Each `topic' is a distribution over words that captures the statistical co-occurrence of tokens.
+\item Evaluating documents against the topic model to get an estimated topic mixture per document.  This mixture will be the distribution over topics that is most likely to have generated the document, given the model.
+\end{enumerate}
+
+In the next section we will describe how we used documents' topic mixtures to investigate link deception.
+In this section, we will describe the topic modeling process itself.
+
+
+\subsection{Preparing data for topic modeling}
+
+For the purposes of our study, 'documents' are either tweet messages or HTML pages.
+However, the peculiarities of LDA necessitate a significant amount of preprocessing on this raw content in order to be effective.
+
+\subsubsection{Bags of words}
+
+LDA uses a ``bag of words'' model for documents.
+This means that word order is ignored in LDA.
+Rather, words are tokenized from records in the corpus and stored sparsely as a feature matrix associating an occurrence count with each token.
+
+\subsubsection{Stop word removal}
+
+
+
 
 Data cleaning 
 
@@ -93,6 +121,9 @@ stopword removal
 
 
 Vern says: Your writeup should make some things clear that here weren't so much, such as just what constitutes a "document" (a single tweet? that appeared to be the meaning), how LDA works (don't assume I know - because I don't!), what you mean by "parsity" (sparsity?), and what the reader is supposed to make of the      LDA output in the appendix.
+
+LDA implementations operate on documents
+
 
 Our  goal for the first segment of our research was to train a classifier  based on learned topics from the data and troubleshoot the process along  the way.
 
