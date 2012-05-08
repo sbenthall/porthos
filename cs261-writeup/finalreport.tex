@@ -252,8 +252,8 @@ It is common practice to remove these stop words when preparing documents for co
 Several open source packages for performing LDA will do this automatically.
 
 For our study, we needed to go beyond the typical list of English stop words to account for uninformative tokens in our particular domains.
-For twitter messages, we removed idiomatic tokens such as ``RT'' (\emph{retweet}) and ``FF'' (\emph{follow friday}).
-In the HTML pages, we removed common HTML tags.  We manually grew out our list of stop words based on observed frequency
+For twitter messages, we removed idiomatic tokens such as ``RT'' (\emph{retweet}) and ``FF'' (\emph{follow friday}). 
+We manually grew out our list of stop words based on observed frequency
 in early model iterations.
 
 \subsubsection{Token normalization}
@@ -313,8 +313,6 @@ that maximizes the likelihood of the document's occurrence.
 Gensim returns topic distributions as sparse vectors.  In our work detecting deception through similarity
 between tweet message and linked content, we used these topic distributions as feature vectors.
 
-\subsection{Clean-up process}
-
 \section{Detecting deceptive tweets}
 
 \begin{figure*}[ht]\centering
@@ -333,7 +331,10 @@ between tweet message and linked content, we used these topic distributions as f
 	based method.}
 \end{figure*}
 
-In this part, we focus on determining a good similarity measure between tweet content and linked content. To this end, we make use of the spam labeling, with the assumption we will further verify that ham tweets display more similarity than spam tweets. Our approach is as follows:
+In this part, we focus on determining a good similarity measure between tweet content and linked content.
+To this end, we make use of the spam labeling, with the goal of picking a measure that allows us to 
+verify that ham tweets display more similarity, and so are less deceptive, than spam tweets.
+Our approach is as follows:
 \begin{enumerate}
 	\item We define a set of candidate similarity measures.
 	\item We evaluate each of the candidates using the spam labeling in the dataset.
@@ -341,7 +342,7 @@ In this part, we focus on determining a good similarity measure between tweet co
 \end{enumerate}
 
 \subsection{Candidate similarity measures}
-We thereby define 3 similarity measures. A similarity measure is any function which takes for input two strings and return a value between 0 and 1.
+We define 3 similarity measures. A similarity measure is any function which takes for input two strings and return a value between 0 and 1.
 
 \subsubsection{Naive Jaccard measure}
 The naive Jaccard measure between a tweet $T$ and its linked HTML content $H$ is defined by:
@@ -417,9 +418,40 @@ $\tau$. In effect, and perhaps more intuitively
 
 \section{Discussion}
 
+Our results show that the messages labeled as spam in our data set are significantly more dissimilar
+to the content they link to than are the hammy messages.
+We interpret these results to confirm our original hypothesis that spammy messages are more likely to be
+deceptive of their linked content.
+This ready ecological explanation merits further scrutiny, as we do not have a strong 
+argument for the strength of content dissimilarity with deception.
+There may be cases of innocuous dissimilarity that is not deceptive but rather vague (e.g. "Hey this is cool: http://xyz").
+Vague messages may exhibit dissimilarity but would only be deceptive in a spammy context.
+One way of examining the dissimilar cases in context would be to identify which topics are most closely
+associated with content dissimilarity.
 
-\section{Conclusion}
-Future work.
+Aside from whether messages with content dissimilarity are \emph{intended} to be deceptive,
+we have not addressed whether such messages are \emph{interpreted} by readers deceptively.
+Empirical work studying users' expectations and reactions to dissonance between tweet message
+and linked content could provide insights into the psychology of social media consumption
+and spam avoidance.
+
+Using LDA for practical applications can be cumbersome because of runtime concerns and stochastic
+implementations.
+Comparing results across different implementations of LDA would help us improve our results and
+provide a guide towards applicability.
+We also anticipate using less sophisticated but similar latent semantic analysis methods such
+as LSI in future work.
+
+Our conversion of tweet messages and HTML pages to 'documents' suitable for consumption in LDA
+
+We believe that link deception is an interesting area of security research because it
+it is a way in which cybercriminals engage in psychological warfare.
+As an element of the spam arms race, link deception is a tool to circumvent
+the vigilance and intentions of human users.
+Our hope is that by identifying an algorithmic means of detecting deception,
+we can contribute towards mechanical prevention of that tactic.
+We can only speculate about implications for link deception as propagated
+by non-spammers.  Perhaps this is a death knell to the rickroll.
 
 \bibliography{collection.bib}
 \bibliographystyle{ieeetr}
