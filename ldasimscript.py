@@ -4,7 +4,6 @@ import gensim
 import classify
 from zlib import decompress
 
-
 HTML_DATA = 'html.db'
 
 print 'Loading data'

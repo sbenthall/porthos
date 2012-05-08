@@ -85,7 +85,7 @@ def cosine(x, y):
 # two bags of words, given an LDA model
 def lda_cosine(tw,ht,model):
     d = []
-    for i in range(20):
+    for i in range(3):
         twv=model[tw]
         htv=model[ht]
         d.append(cosine(twv, htv))
