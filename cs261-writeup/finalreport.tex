@@ -20,7 +20,6 @@
 \DeclareMathOperator*{\simil}{sim}
 \DeclareMathOperator*{\cosine}{cosine}
 
-
 %\pagestyle{empty}
 
 \begin{document}
@@ -36,11 +35,11 @@ University of California, Berkeley \\
 
 \begin{abstract}
 	In this work, we consider the problem of ``deceptive tweets'', e.g. tweets 
-	linking to at least one URL and such that the tweet content is not related 
+	linking to at least one URL such that the tweet content is not related 
 	to the URL content. We describe an LDA-based method for detecting deceptive 
 	tweets and evaluate its performance on a random sample of about 210k tweets from 
-	October 2010. We use this evaluation to gain some insight into the deceptive 
-	tweets issue. As an interesting by product, our work resulted in an efficient, 
+	October 2010. We show that spammy tweets are significantly more deceptive than ham.
+	As an interesting by-product, our work resulted in an efficient, 
 	information theoretic language detection algorithm for short character runs.
 \end{abstract}
 
@@ -48,8 +47,8 @@ University of California, Berkeley \\
 
 Links can hold surprises. In social media especially, users encounter links in fleeting 
 messages that may contain little context, if any. This environment enables deception in 
-the presentation of links, as the linked content may only share little in common, if any, 
-with the original message. Socially, deception can be a game, as in the rick-rolling prank [???], 
+the presentation of links, as the linked content may share little in common 
+with the original message. Socially, deception can be a game, as in the rickrolling prank \cite{Wiki2012}, 
 whereby a user claims to be sharing a serious article but instead links to a dated music 
 video. Aside from such recreational instances, how prevalent are deceptive messages and 
 what are their relation to spam? Our study investigates this connection in the context of Twitter.
@@ -68,7 +67,7 @@ ham based on the links' presence on URL blacklists.
 
 We show that indeed, there is a significant, albeit quite noisy, relationship between content
 dissonance and the spaminess character of tweets. We manually identify the causes of noise 
-and explain how to address them in an ulterior iteration of the project. This suggests that
+and explain how to address them in an future iteration of the project. This suggests that
 a content dissimilarity measure might be a useful feature for spam detection. In this perspective,
 we finally briefly discuss the robustness of the feature in the face of adversity.
 
@@ -122,7 +121,7 @@ about message length, LDA can be successfully applied to Twitter as long as
 researchers are willing to be creative about message aggregation, algorithmic enhancements,
 or tight definition of the problem at hand.
 
-Very close to our project proposal, \cite{Kim2011} apply LDA to identify solicitations 
+Very close to our project's original intent, \cite{Kim2011} apply LDA to identify solicitations 
 for web service abuse jobs, which gives us confidence that topic modeling can pick out 
 intuitive categories of adverse behavior from a broad data set. 
 
@@ -157,8 +156,9 @@ stream through the contained files.}.
 
 \section{Language detection for tweets}
 In order to limit our preliminary results to those that we could interpret, we further filtered 
-this data to include only English language tweets. Our first attempt was to naively use the API data provided
-by twitter, however we soon found out that the quality of the language labels was insufficient.
+this data to include only English language tweets. Our first attempt was to naively use the language field
+from the tweeting user's metadata to identify the tweet language.
+However we soon found out that the quality of the language labels was insufficient for our needs.
 It turns out that language detection for short runs of characters is a difficult problem~\cite{Vojtek2007}~\cite{Gottron2010}
 ~\cite{Carter2011}. We decided to create our very own language detection algorithm and to build it
 on the solid grounds of information theory. More precisely, we adopted the universal 
@@ -253,44 +253,67 @@ Several open source packages for performing LDA will do this automatically.
 
 For our study, we needed to go beyond the typical list of English stop words to account for uninformative tokens in our particular domains.
 For twitter messages, we removed idiomatic tokens such as ``RT'' (\emph{retweet}) and ``FF'' (\emph{follow friday}).
-In the HTML pages, we removed common HTML tags.
+In the HTML pages, we removed common HTML tags.  We manually grew out our list of stop words based on observed frequency
+in early model iterations.
+
+\subsubsection{Token normalization}
+
+To further reduce the noise in our inferred topics, we normalized some frequently occurring classes of tokens
+that we believed to be variants of each other.
+For example, we normalized "hahahahaha" and its variants to "haha".
+
+\subsubsection{Rendering HTML}
+
+In order to extract linguistic content from HTML documents that otherwise contain technical markup unexpected by LDA,
+we rendered the HTML using the text-based browser Lynx before tokenizing.
+
+\subsubsection{URL removal}
+
+We removed the URLs from tweet messages before tokenizing them into bag of words format.
+A possible variant of our method for future work would leave URL components in both tweet and HTML documents,
+annotated to distinguish them from free text.
+It is worth noting that after removing URLs and stop words, most tweet messages had very few tokens, on the order of 5-8 words.
 
 
-Data cleaning 
+\subsection{Training the topic model}
 
-stopword removal
+The LDA algorithm as described by \cite{Blei2003} trains a generative statistical model based on a corpus of documents.
+In this model, a topic is a probability distribution over words.
+Each document generated by the model is composed by sampling topics from an underlying Dirichlet distribution,
+then sampling words from those topics.
+The result is a `bag of words'.
+Training the model is the process of learning model parameters, including the distributions of words for each topic, that give a high likelihood to the provided corpus.
 
+Typically, implementations of LDA will provide as output a list of \emph{topic keys}, the highest probability words associated with each document.
+These provide a kind of automatic labeling of the topics and provide the modeler with a sense of the algorithms performance.
+In early iterations of the project, we found promising indications that such modeling could identify features that corresponded with out domain knowledge of spam.
+For example. one topic was characterized by these keywords:
 
+\begin{quotation}
+news world iphone win tv apple google watch ipad ap hey  app price search sports click buy giveaway case ipod late shows gb touch  tech test year deal series
+\end{quotation} 
 
-Vern says: Your writeup should make some things clear that here weren't so much, such as just what constitutes a "document" (a single tweet? that appeared to be the meaning), how LDA works (don't assume I know - because I don't!), what you mean by "parsity" (sparsity?), and what the reader is supposed to make of the      LDA output in the appendix.
+Implementations of LDA differ in their approach to approximating the statistical model, and so differ in the parameters they make available.
+For the results presented in this paper, we used Gensim \cite{rehurek_lrec}, a Python implementation.
+In this implementation, we needed to specify only the number of topics $k$ assumed by model before training.
+The higher the value of $k$, the algorithm takes longer to execute but returns more granular topics.
 
-LDA implementations operate on documents
+The corpus on which we trained our LDA models was the total set of HTML documents in our data set, subject to the preprocessing steps described above.
+`Ham' and `spam' HTML content were both included.
+Tweet messages were not included in the corpus.
+It is worth noting that after preprocessing 
 
+\subsection{Evaluating documents against the topic model}
 
-Our  goal for the first segment of our research was to train a classifier  based on learned topics from the data and troubleshoot the process along  the way.
+Once a topic model has been trained on a corpus, documents (in bag of words form) can
+be evaluated for their \emph{topic distribution}.
+This topic distribution is an estimate of the distribution of latent topics available in the model
+that maximizes the likelihood of the document's occurrence.
 
-Focusing on the tweet messages themselves, we cleaned this data by generating a list of stopwords based on commonly used English stopwords as well as informally based on observed term frequency in order to account for the peculiarities of Twitter lexical feature frequency.
+Gensim returns topic distributions as sparse vectors.  In our work detecting deception through similarity
+between tweet message and linked content, we used these topic distributions as feature vectors.
 
-Running the standard LDA algorithm on these short messages produced two results:
-	* A list of topics, labeled with 'topic keys'  the most prominent words used in the topics
-	* An inferred distribution of topics per document
-    
-The results from the topic keys were promising, with several of the topics corresponding to domain knowledge of what constitutes spam.  For example. one topic was characterized by these keywords:
-
-news world iphone win tv apple google watch ipad ap hey  app price search sports click buy giveaway case ipod late shows gb touch  tech test year deal series 
-
-Using the topic distribution for each document as a feature vector, we trained a naive Bayes classifier and tested its spam detection accuracy against the labeled data, using n-fold cross validation.
-
-The performance of this classifier was underwhelming (.57 accuracy against a spam base rate of .73).  However, this is unsurprising given the parsity of data we were using for this particular iteration.
 \subsection{Clean-up process}
-
-
-\begin{figure}
-	\includegraphics[width=8.8cm]{cdf_en_content_length.eps}
-	\caption{Effect of cleaning up code on content length. The cumulative probability distributions of content length
-	for both cleaned up and raw tweets are plotted.}
-	\label{len_cdf}
-\end{figure}
 
 \section{Detecting deceptive tweets}
 
@@ -363,7 +386,7 @@ We now turn to the evaluation of each similarity measure. To this end, we will m
 validate) that ham tweets are less deceptive than spam tweets. Keeping this in mind, we simply seek the similarity
 measure which maximizes the Area Under the Curve of the induced thresholded classified, e.g. 
 the classifier which outputs \verb SPAM  if and only if the similarity measure is below a fixed threshold 
-$\tau$. Another way to understand the AUC measure is basically th
+$\tau$. In effect, and perhaps more intuitively
 
 \begin{table}[!h]\centering
 	\begin{tabular}{|c|p{1.5cm}|p{1cm}|p{1cm}|p{1cm}|}
