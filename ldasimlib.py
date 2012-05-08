@@ -149,7 +149,8 @@ def filter_tweets(tweets,html,w2i,cutoff=1000):
                         good_tweet_bags[key] = {
                             "is_spam": tweets[key]['label']==1,
                             "tw": tw,
-                            "ht": ht 
+                            "ht": ht,
+                            "n_html":len(html[key])
                             }
     return good_tweet_bags
 
