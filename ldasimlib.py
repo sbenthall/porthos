@@ -97,6 +97,7 @@ def tweet_bags2ldanpy(tweet_bags,ldamodel,save_npy=True,num_topics=100):
 
     tweet_topic_data = zeros((num_bow,num_topics))
     html_topic_data = zeros((num_bow,num_topics))
+    sim_data = zeros(num_bow)
     spam_data = zeros(num_bow)
 
     for i,key in enumerate(tweet_bags.keys()):
@@ -104,7 +105,8 @@ def tweet_bags2ldanpy(tweet_bags,ldamodel,save_npy=True,num_topics=100):
         spam_data[i] = 1 if entry["is_spam"] else 0
         twv = ldamodel[entry["tw"]]
         htv = ldamodel[entry["ht"]]
-
+        sim_data[i] = cosine(twv,htv)
+        
         for topic,value in twv:
             tweet_topic_data[i][topic] = value
         for topic,value in htv:
@@ -115,7 +117,7 @@ def tweet_bags2ldanpy(tweet_bags,ldamodel,save_npy=True,num_topics=100):
         save('html_topic_data',html_topic_data)
         save('spam_data',spam_data)
         
-    return tweet_topic_data, html_topic_data, spam_data
+    return tweet_topic_data, html_topic_data, sim_data, spam_data
 
 # compute jaccard similarity between two bags of words
 def jaccard(tw,ht,model='dummy'):

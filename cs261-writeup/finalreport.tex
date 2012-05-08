@@ -27,17 +27,134 @@ University of California, Berkeley \\
 
 \section{Introduction}
 
-\section{Prior Work}
+Links can hold surprises.
+In social media especially, users encounter links in fleeting messages that may contain little context.
+This environment enables deception in the presentation of links.
+Socially, deception can be a game, as in the rick-rolling prank, whereby a user claims to be sharing a serious article but instead links to a dated music video.
+Is link deception used in spam and cybercrime?
+Our study investigates this connection in the context of Twitter.
+
+We operationalize deception as the similarity between a message (tweet) containing a link and the content of the HTML to which the link resolves.
+As deception involves an element of subjective interpretation, we first use an algorithmic method of approximating latent semantic structure: topic modeling.
+Topic models provide a means for dimensionality reduction of lexical features (words) in a way can capture interpretable categories of content.\cite{Blei2003}
+
+Our guiding hypothesis is that spammy or criminal tweets will have more dissonance between their contextual information and linked content.
+We test this hypothesis using data provided by the Monarch project.\cite{Thomas2011}
+This data bundles information about tweets containing links with the crawled HTML of the pages linked to.
+These bundles are labeled as spam or ham based on the links' presence on a URL blacklist.
+
+
+\section{Related Work}
+\subsection{Spam Detection}
+In general, previous work on spam detection for social networks has strongly favored either content or envelope based features. In the content-based approaches, \cite{Cormack2007} demonstrates that spam filtering based on lexical, message content level features for short messages is surprisingly effective through a comparison of several machine learning algorithms across multiple corpora. On the other side of the spectrum, \cite{Stringhini2010} tackles the problem of spam accounts detection on general social networks by using graph related features (number of friends, contact requests, \dots), regardless of actual message content. \cite{Zhang2011}, \cite{Ghosh2011} have shown that envelope features such as timing data are informative in classifying automated or semi-automated behavior on Twitter. \cite{Gao2010} has brushed the picture of spam campaigns on Facebook, by grouping wall posts by shared URLs and contents, and then detecting spam clusters by simple burstiness and distributeness heuristics.
+
+As both a middle ground and a demonstration of technical feasibility, \cite{Thomas2011} developed a real-time service for detecting whether a URL linked to from email or social media is spam. Their system, Monarch, collects features from the linked page using an instrumented browser and then performs classification using a novel architecture designed for scale. In their analysis, they provide metrics for the salience of features for spam detection.
+
+\subsection{Topic modeling}
+Prior spam filtering research on Twitter employs myriad classification algorithms. We hope to make a contribution by using topic modeling methods, originally from natural language processing, designed to statistically infer latent semantic structure or generative features from a corpus. \cite{Blei2003} first introduced Latent Dirichlet Allocation, a probabilistic graphical model whose hidden variables, the topics, are distributions over the explicit features, the words or tokens. Once these hidden variables have been inferred from a corpus, that topic model can then be used to derive a topic mixture vector for new documents, reducing it to a lower-dimensional feature space.
+
+LDA has previously been successfully applied to social network data. \cite{Hong2010} compares different methods of aggregating tweets to compensate for the short message length. Their results suggest that when evaluating the behavior of users, it is better to train topic models on documents composed of the users' aggregated messages as opposed to individual messages. \cite{Ramage2010} compensates for short message length by using a partially supervised variant, Labelled LDA, where some tokens were pre-identified as topic labels. This technique allowed the researchers to use domain-specific knowledge about Twitter content, such as an understanding of hashtags and emoticons, to improve their results. \cite{Ritter2010} use LDA to infer a model of conversations on Twitter through ``dialogue acts'' by augmenting topic modeling techniques with tuned categories for dialogue acts like questioning, responding, or commenting. So, despite concerns about message length, LDA can be successfully applied to Twitter as long as researchers are willing to be creative about message aggregation, algorithmic enhancements, or tight definition of the problem at hand.
+
+Very close to our project proposal, \cite{Kim2011} apply LDA to identify solicitations for web service abuse jobs, which gives us confidence that topic modeling can pick out intuitive categories of adverse behavior from a broad data set. 
+
 
 \section{The dataset}
 
+The Monarch data we used consisted of records that bundled data from Twitter with information about crawled URLs, labeled with whether or not the URL was blacklisted.
+These bundles included a wealth of metadata and envelop information that we were unable to explore thoroughly in the context of our study.
+For example, the Twitter metadata included the information made available through the service's API, including profile information of the sending user.
+This metadata included a field for the senders' language which proved an unreliable indicator of the language of the tweet message.
+
+We distilled a subset of the features of this data for our study.
+Focusing on content features, we examined records for the tweet messages and crawled HTML content.
+A small number of records contained more than one HTML page per tweet message.
+We included these additional HTML pages in our corpus for the purpose of model training but left them out of similarity computations.
+
+[info about data timing etc. here]
+
 \section{Language detection for tweets}
 
+In order to limit our preliminary results to those that we could interpret, we further filtered this data to include only English language tweets.  We detected tweet language by computing lexical compressibility against corpuses of English, French, Chinese, and other languages.
+
 \section{Topic modeling on twitter}
+
+We began our study with the hope to improve classification accuracy of Monarch by deriving higher-level content features from those that Monarch collects.
+The two main advantages of topic modeling with LDA over other methods of processing text for classification based on word frequency are:
+\begin{enumerate}
+\item the identification of synonyms and disambiguation of homographs based on document context
+\item the explanatory power of the reduced feature space, which often captures intuitive categories of behavior or communication. 
+\end{enumerate}
+We expected that LDA will learn categories of activity that we pick out with ease perceptually, such as Viagra ads, consumer electronics affiliates, and domain squatting.
+We aimed to apply LDA to the content features of the messages and crawled URLs in the available data to derive new features for spam filtering.
+
+At a high level, topic modeling with LDA involves:
+\begin{enumerate}
+\item Preparing corpus data to be consumed by LDA
+\item Training the topic model on the corpus.  Each `topic' is a distribution over words that captures the statistical co-occurrence of tokens.
+\item Evaluating documents against the topic model to get an estimated topic mixture per document.  This mixture will be the distribution over topics that is most likely to have generated the document, given the model.
+\end{enumerate}
+
+In the next section we will describe how we used documents' topic mixtures to investigate link deception.
+In this section, we will describe the topic modeling process itself.
+
+
+\subsection{Preparing data for topic modeling}
+
+For the purposes of our study, 'documents' are either tweet messages or HTML pages.
+However, the peculiarities of LDA necessitate a significant amount of preprocessing on this raw content in order to be effective.
+
+\subsubsection{Bags of words}
+
+LDA uses a ``bag of words'' model for documents.
+This means that word order is ignored in LDA.
+Rather, words are tokenized from records in the corpus and stored sparsely as a feature matrix associating an occurrence count with each token.
+
+\subsubsection{Stop word removal}
+
+LDA fits the parameters of its topic model to reflect the composition of documents in the provided corpus.
+For very frequently occurring words, however, the words presence does not provide any information about the documents contents or meaning.
+Typical examples of these ``stop words'' in English include ``a'', ``and'', and ``it''.
+It is common practice to remove these stop words when preparing documents for consumption by LDA.
+Several open source packages for performing LDA will do this automatically.
+
+For our study, we needed to go beyond the typical list of English stop words to account for uninformative tokens in our particular domains.
+For twitter messages, we removed idiomatic tokens such as ``RT'' (\emph{retweet}) and ``FF'' (\emph{follow friday}).
+In the HTML pages, we removed common HTML tags.
+
+
+Data cleaning 
+
+stopword removal
+
+
+
+Vern says: Your writeup should make some things clear that here weren't so much, such as just what constitutes a "document" (a single tweet? that appeared to be the meaning), how LDA works (don't assume I know - because I don't!), what you mean by "parsity" (sparsity?), and what the reader is supposed to make of the      LDA output in the appendix.
+
+LDA implementations operate on documents
+
+
+Our  goal for the first segment of our research was to train a classifier  based on learned topics from the data and troubleshoot the process along  the way.
+
+Focusing on the tweet messages themselves, we cleaned this data by generating a list of stopwords based on commonly used English stopwords as well as informally based on observed term frequency in order to account for the peculiarities of Twitter lexical feature frequency.
+
+Running the standard LDA algorithm on these short messages produced two results:
+	* A list of topics, labeled with 'topic keys'  the most prominent words used in the topics
+	* An inferred distribution of topics per document
+    
+The results from the topic keys were promising, with several of the topics corresponding to domain knowledge of what constitutes spam.  For example. one topic was characterized by these keywords:
+
+news world iphone win tv apple google watch ipad ap hey  app price search sports click buy giveaway case ipod late shows gb touch  tech test year deal series 
+
+Using the topic distribution for each document as a feature vector, we trained a naive Bayes classifier and tested its spam detection accuracy against the labeled data, using n-fold cross validation.
+
+The performance of this classifier was underwhelming (.57 accuracy against a spam base rate of .73).  However, this is unsurprising given the parsity of data we were using for this particular iteration.
 \subsection{Clean-up process}
 
 \section{Detecting deceptive tweets}
 
 \section{Conclusion}
 
+
+\bibliography{collection.bib}
+\bibliographystyle{ieeetr}
 \end{document}
