@@ -39,21 +39,14 @@ class LdaSpamClassifierTester:
         #train classifier on specified indices of the training set
     def train(self,training_indices):
         # using all data for now
-        print "Creating training set"
         training_set = [self.training_example(i) for i in training_indices]
     
-        print "Training"
         classifier = nltk.NaiveBayesClassifier.train(training_set)
         return classifier
 
     def test(self,classifier, testing_indices):
-        print "Creating testing set"
         testing_set = [(self.features(i)) for i in testing_indices]
-
-        print "Testing"
         test_results = classifier.batch_classify(testing_set)
-        
-        print "Results are in!"
     
         accurate_test_results = [label == ('spam' if self.sm[testing_indices[i]] else 'ham') for i,label in enumerate(test_results)]
         return test_results, accurate_test_results
