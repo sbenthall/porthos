@@ -1,0 +1,70 @@
+\documentclass[journal]{IEEEtran}
+%\documentclass{article}
+
+\usepackage{amsmath,amstext,amsfonts,amssymb}
+\usepackage{epsfig,float}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{url}
+\usepackage{rotate}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{colortbl}
+
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\newcommand{\var}{\operatornamewithlimits{Var}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\newenvironment{proof}[1][Proof]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{definition}[1][Definition]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{example}[1][Example]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{remark}[1][Remark]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\newcommand{\qed}{\nobreak \ifvmode \relax \else
+      \ifdim\lastskip<1.5em \hskip-\lastskip
+      \hskip1.5em plus0em minus0.5em \fi \nobreak
+      \vrule height0.75em width0.5em depth0.25em\fi}
+
+\begin{document}
+
+\title{Topic Modeling for Twitter Spam Detection}
+\author{Sebastian Benthall, Alex Kantchelian}
+\markboth{CS261N - Network Security, Vern Paxon, Spring 2012 - Related Work Writeup}{}
+\maketitle
+
+\section{Notes on the proposal}
+In our work, we hope to improve classification accuracy of Monarch by deriving higher-level content features from those that Monarch collects. The two main advantages of topic modelling with LDA over other methods of processing text for classification based on word frequency are:
+\begin{enumerate}
+\item the identification of synonyms and disambiguation of homographs based on document context
+\item the explanatory power of the reduced feature space, which often captures intuitive categories of behavior or communication. 
+\end{enumerate}
+We expect that LDA will learn categories of activity that we pick out with ease perceptually, such as Viagra ads, consumer electronics affiliates, and domain squatting.
+We aim to apply LDA to the content features of the messages and crawled URLs in the available data to derive new features for spam filtering. We also aim to adapt LDA to include content-independent features in its model, which as far as we know has not been attempted before.
+
+\section{Related Work}
+\subsection{Spam Detection}
+In general, previous work on spam detection for social networks has strongly favored either content or envelope based features. In the content-based approaches, \cite{Cormack2007} demonstrates that spam filtering based on lexical, message content level features for short messages is surprisingly effective through a comparison of several machine learning algorithms across multiple corpora. On the other side of the spectrum, \cite{Stringhini2010} tackles the problem of spam accounts detection on general social networks by using graph related features (number of friends, contact requests, \dots), regardless of actual message content. \cite{Zhang2011}, \cite{Ghosh2011} have shown that envelope features such as timing data are informative in classifying automated or semi-automated behavior on Twitter. \cite{Gao2010} has brushed the picture of spam campaigns on Facebook, by grouping wall posts by shared URLs and contents, and then detecting spam clusters by simple burstiness and distributeness heuristics.
+
+As both a middle ground and a demonstration of technical feasibility, \cite{Thomas2011} developed a real-time service for detecting whether a URL linked to from email or social media is spam. Their system, Monarch, collects features from the linked page using an instrumented browser and then performs classification using a novel architecture designed for scale. In their analysis, they provide metrics for the salience of features for spam detection.
+
+\subsection{Topic modeling}
+Prior spam filtering research on Twitter employs myriad classification algorithms. We hope to make a contribution by using topic modeling methods, originally from natural language processing, designed to statistically infer latent semantic structure or generative features from a corpus. \cite{Blei2003} first introduced Latent Dirichlet Allocation, a probabilistic graphical model whose hidden variables, the topics, are distributions over the explicit features, the words or tokens. Once these hidden variables have been inferred from a corpus, that topic model can then be used to derive a topic mixture vector for new documents, reducing it to a lower-dimensional feature space.
+
+LDA has previously been successfully applied to social network data. \cite{Hong2010} compares different methods of aggregating tweets to compensate for the short message length. Their results suggest that when evaluating the behavior of users, it is better to train topic models on documents composed of the users' aggregated messages as opposed to individual messages. \cite{Ramage2010} compensates for short message length by using a partially supervised variant, Labelled LDA, where some tokens were pre-identified as topic labels. This technique allowed the researchers to use domain-specific knowledge about Twitter content, such as an understanding of hashtags and emoticons, to improve their results. \cite{Ritter2010} use LDA to infer a model of conversations on Twitter through ``dialogue acts'' by augmenting topic modeling techniques with tuned categories for dialogue acts like questioning, responding, or commenting. So, despite concerns about message length, LDA can be successfully applied to Twitter as long as researchers are willing to be creative about message aggregation, algorithmic enhancements, or tight definition of the problem at hand.
+
+Very close to our project proposal, \cite{Kim2011} apply LDA to identify solicitations for web service abuse jobs, which gives us confidence that topic modeling can pick out intuitive categories of adverse behavior from a broad data set. 
+
+\bibliography{collection.bib}
+\bibliographystyle{ieeetr}
+\end{document}
