@@ -11,17 +11,15 @@ TRAINING_RATIO = .9
 
 class LdaSpamClassifierTester:
     
-    # ttm, htm, and sm are numpy arrays
-    # ttm - tweet topic matrix
-    # htm - html topic matrix
+    # tm, and sm are numpy arrays
+    # tm - topic matrix
     # sm - spam matrix (i.e., sm[i] is 1 iff tweet i is spam
-    def __init__(self,ttm,htm,sm):
-        self.ttm = ttm
-        self.htm = htm
+    def __init__(self,tm,sm):
+        self.tm = tm
         self.sm = sm
     
     def features(self,i):
-        return dict([t for t in enumerate(self.ttm[i,:])])
+        return dict([t for t in enumerate(self.tm[i,:])])
 
     def training_example(self,i):
         label = "spam" if self.sm[i] else "ham"
@@ -29,8 +27,6 @@ class LdaSpamClassifierTester:
 
     def sample_indices(self,training_ratio=TRAINING_RATIO):
         n_training = int(self.sm.size * training_ratio)
-        print "Training on %s, Testing on %s" % (n_training, self.sm.size)
-        print "Selecting training and testing indices"
         permuted_indices = numpy.random.permutation(self.sm.size)
         training_indices = numpy.arange(self.sm.size)[permuted_indices[n_training:]]
         testing_indices = numpy.arange(self.sm.size)[permuted_indices[:n_training]]
@@ -62,7 +58,6 @@ class LdaSpamClassifierTester:
             classifier = self.train(train_i)
             results, accuracy = self.test(classifier, test_i)
             
-            print self.ratio(accuracy)
             ratios.append(self.ratio(accuracy))
                 
         mean_success = numpy.mean(ratios)
