@@ -111,7 +111,15 @@ Rather, words are tokenized from records in the corpus and stored sparsely as a 
 
 \subsubsection{Stop word removal}
 
+LDA fits the parameters of its topic model to reflect the composition of documents in the provided corpus.
+For very frequently occurring words, however, the words presence does not provide any information about the documents contents or meaning.
+Typical examples of these ``stop words'' in English include ``a'', ``and'', and ``it''.
+It is common practice to remove these stop words when preparing documents for consumption by LDA.
+Several open source packages for performing LDA will do this automatically.
 
+For our study, we needed to go beyond the typical list of English stop words to account for uninformative tokens in our particular domains.
+For twitter messages, we removed idiomatic tokens such as ``RT'' (\emph{retweet}) and ``FF'' (\emph{follow friday}).
+In the HTML pages, we removed common HTML tags.
 
 
 Data cleaning 
@@ -126,8 +134,6 @@ LDA implementations operate on documents
 
 
 Our  goal for the first segment of our research was to train a classifier  based on learned topics from the data and troubleshoot the process along  the way.
-
-We received a sample of the Monarch data from Chris Grier, and limited our study to Twitter data (as opposed to emails).  
 
 Focusing on the tweet messages themselves, we cleaned this data by generating a list of stopwords based on commonly used English stopwords as well as informally based on observed term frequency in order to account for the peculiarities of Twitter lexical feature frequency.
 
