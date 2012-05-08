@@ -25,13 +25,14 @@ print 'Loading corpus'
 corpus = cPickle.load(open('corpus.pkl','r'))
 
 #print 'Generating model'
-#model=gensim.models.ldamodel.LdaModel(corpus, id2word=i2w, num_topics=100)
+ldamodel=gensim.models.ldamodel.LdaModel(build_corpus_iterator(html,w2i), id2word=i2w, num_topics=100)
+#model=gensim.models.ldamodel.LdaModel(corpus, id2word=i2w, num_topics=NUM_TOPICS)
 
 #print 'Saving model'
 #model.save('model.pkl')
 
-print 'Loading LDA model'
-ldamodel = gensim.models.ldamodel.LdaModel.load('model.pkl')
+#print 'Loading LDA model'
+#ldamodel = gensim.models.ldamodel.LdaModel.load('model.pkl')
 
 print 'Generating TF-IDF model'
 tfidfmodel = gensim.models.tfidfmodel.TfidfModel(corpus)
