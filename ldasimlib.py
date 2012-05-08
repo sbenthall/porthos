@@ -17,19 +17,6 @@ from math import sqrt
 from pylab import hist, legend, title, xlabel, ylabel, show, savefig, clf
 import itertools
 
-#set of interesting htmls to consider
-def candidates(html,w2i):
-    candidates = set()
-    
-    for key in html:
-        for comp in html[key]:
-            bag=to_bow(decompress(comp), w2i)
-            if len(bag)>0:
-                if key not in candidates:
-                    candidates.add(key)
-
-    return candidates
-
 def to_nbow(text,w2i):
     return [[w2i[x[0]], x[1]] for x in to_bow(text, w2i).items() if x[0] not in stopwords]
 
@@ -37,28 +24,27 @@ def to_nbow(text,w2i):
 def permute(entries):
     random.seed(0)
     return random.permutation(list(entries))
-'''
-legacy code
-def build_corpus(candidates,w2i,cutoff=10000):
-    pcandidates = permute_candidates(candidates)
-    for key in pcandidates[:cutoff]:
-        for comp in html[key]:
-            corpus.append(to_nbow(decompress(comp)),w2i)
-    return corpus
-'''
 
 # yield statement makes this an iterator
 # not sure if there is any way to cache to uncompressed
 # values to save time
-def build_corpus_iterator(html,w2i,randomize=True,cutoff=10000):
-    print "Corpus iterating over %d records" %(cutoff)
-    if randomize:
-        print "Randomizing keys"
-    for key in permute(html.keys())[:cutoff] if randomize else html.keys()[:cutoff]:
-        for comp in html[key]:
-            nbow = to_nbow(decompress(comp),w2i)
-            if len(nbow) > 0:
-                yield nbow
+def build_corpus_iterator(html,w2i,randomize=True,cutoff=20000):
+    if cutoff is not None:
+        print "Corpus iterating over %d records" %(cutoff)
+        if randomize:
+            print "Randomizing keys"
+            for key in permute(html.keys())[:cutoff] if randomize else html.keys()[:cutoff]:
+                for comp in html[key]:
+                    nbow = to_nbow(decompress(comp),w2i)
+                    if len(nbow) > 0:
+                        yield nbow
+    else:
+        print "Corpus is whole data set"
+        for key in html:
+            for comp in html[key]:
+                nbow = to_nbow(decompress(comp),w2i)
+                if len(nbow) > 0:
+                    yield nbow
     
 #compute cosine similarity of two vectors x and y
 def cosine(x, y):
