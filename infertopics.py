@@ -7,7 +7,8 @@ def import_dir():
     cmd = MALLET + "import-dir "
     cmd += "--input %s " % (DATA_DIR)
     cmd += "--output %s " % (MALLET_INPUT_FILE)
-    cmd += "--keep-sequence --remove-stopwords"
+    cmd += "--keep-sequence --remove-stopwords "
+    cmd += "--token-regex [A-Za-z0-9]+"
     os.system(cmd)
 
 def train_topics():
