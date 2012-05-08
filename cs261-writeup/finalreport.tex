@@ -331,6 +331,7 @@ between tweet message and linked content, we used these topic distributions as f
 		with cosine distance. Notice the discretized values of the
 		Jaccard measure and the continuous values of the LDA
 	based method.}
+	\label{cdfs}
 \end{figure*}
 
 In this part, we focus on determining a good similarity measure between tweet content and linked content. To this end, we make use of the spam labeling, with the assumption we will further verify that ham tweets display more similarity than spam tweets. Our approach is as follows:
@@ -386,7 +387,18 @@ We now turn to the evaluation of each similarity measure. To this end, we will m
 validate) that ham tweets are less deceptive than spam tweets. Keeping this in mind, we simply seek the similarity
 measure which maximizes the Area Under the Curve of the induced thresholded classified, e.g. 
 the classifier which outputs \verb SPAM  if and only if the similarity measure is below a fixed threshold 
-$\tau$. In effect, and perhaps more intuitively
+$\tau$. In effect, and perhaps more intuitively, the AUC measure represents in our case the probability that a
+uniformly sampled ham tweet has a strictly higher similarity score than a uniformly sampled ham tweet.
+
+For this evaluation, we disregard from our dataset tweets that:
+
+\begin{itemize}
+	\item either result in an empty bag-of-word after removing the stop words (in effect, tweets like \emph{check this out!}, or tweets which simply contain a naked link).
+	\item either result in empty bag-of-word model(s) for the HTML content after removing stop words (does happen for empty HTML
+		data).
+\end{itemize}
+
+This preprocessing step leaves us with 89,353 out of the initial 114,246 tweets in English, reducing the dataset by about $22$%%.
 
 \begin{table}[!h]\centering
 	\begin{tabular}{|c|p{1.5cm}|p{1cm}|p{1cm}|p{1cm}|}
@@ -401,18 +413,32 @@ $\tau$. In effect, and perhaps more intuitively
 	LDA-40 & Cosine & 0.446 & 0.450 & 0.450 \\
 	\hline
 	\end{tabular}
-	\label{perf}
 	\caption{AUC measures for different similarity measures when used 
 		as a spam detector by thresholding on the similarity. LDA with
 		10 topics is the best candidate, TF-IDF performs particularly
 	badly on the task.}
+	\label{perf}
 \end{table}
+
+Table \ref{perf} summarizes the results. The min, max and average AUC come from the fact that a tweet can
+have several associated HTML documents as previously stated. Consequently, we report the AUC for the
+max, min and average of the similarities for a given tweet, and notice that the difference is insignificant. 
+Unsurprisingly, the naive Jaccard approach performs quite poorly, and the TF-IDF similarity 
+metric is counter-productive. The best similarity metric with respect to ham and spam detection is 
+LDA with $k=10$ topics. Figure \ref{cdfs} contrasts the cumulative 
+probability distributions over the ham and spam subsets for the Jaccard measure and the 10-LDA measure. To get
+a sense of what the ROC curve of a thresholded spam detector based on $k$-LDA similarity measures might look like,
+figure \ref{roc} plots the ROC curves of the 4 $k$-LDA measures on the dataset. The sudden drops mean that the
+resulting classifier outputs a fixed amount of false positives, an effect due to having zero similarity scores 
+for both ham and spam tweets.
 
 \begin{figure}[ht]\centering
 	\includegraphics[width=8.8cm]{roc_lda_sim.png}
 	\caption{ROC curves of the hypothetical spam filters based on thresholding k-topics LDA cosine
 	similarity. Notice the sudden drops at higher dimensions as the data sparsity comes into play.}
+	\label{roc}
 \end{figure}
+
 \subsection{A closer look at the data}
 
 \section{Discussion}
