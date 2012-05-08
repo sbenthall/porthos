@@ -16,6 +16,10 @@
 \usepackage{colortbl}
 \usepackage[margin=0.7in]{geometry}
 
+\DeclareMathOperator*{\bow}{bow}
+\DeclareMathOperator*{\simil}{sim}
+
+
 %\pagestyle{empty}
 
 \begin{document}
@@ -283,6 +287,14 @@ The higher the value of $k$, the algorithm takes longer to execute but returns m
 
 \subsection{Clean-up process}
 
+
+\begin{figure}
+	\includegraphics[width=8.8cm]{cdf_en_content_length.eps}
+	\caption{Effect of cleaning up code on content length. The cumulative probability distributions of content length
+	for both cleaned up and raw tweets are plotted.}
+	\label{len_cdf}
+\end{figure}
+
 \section{Detecting deceptive tweets}
 
 \begin{figure*}[ht]\centering
@@ -301,6 +313,25 @@ The higher the value of $k$, the algorithm takes longer to execute but returns m
 	based method.}
 \end{figure*}
 
+In this part, we focus on determining a good similarity measure between tweet content and linked content. To this end, we make use of the spam labeling, with the assumption we will further verify that ham tweets display more similarity than spam tweets. Our approach is as follows:
+\begin{enumerate}
+	\item We define a set of candidate similarity measures.
+	\item We evaluate each of the candidates using the spam labeling in the dataset.
+	\item We a posteriori validate or invalidate the results by manually looking at low-similarity and high-similarity tweets.
+\end{enumerate}
+
+\subsection{Candidate similarity measures}
+We thereby define 3 similarity measures. A similarity measure is any function which takes for input two strings and return a value between 0 and 1.
+
+\subsubsection{Naive Jaccard measure}
+The naive Jaccard measure between a tweet $T$ and its linked HTML content $H$ is defined by:
+\[
+	\simil_{J}(T, H) = \frac{|\bow(T) \cap \bow(H)|}{|\bow(T)|}
+\]
+where $\bow$ is the bag-of-wording function which takes a string and returns a set of normalized tokens with stop words removed. This measure is expected to perform relatively poorly because of the sparse, high dimensional nature of the bag of words. We expect a lot of blunt 0 and 1 values for this metric.
+
+\subsubsection{TF-IDF normalized cosine measure}
+The TF-IDF distance 
 
 \begin{table}[!h]\centering
 	\begin{tabular}{|c|p{1.5cm}|p{1cm}|p{1cm}|p{1cm}|}
