@@ -168,14 +168,17 @@ def ham_spam_similarities(tweet_bags,bow_sim,tweets,model='dummy'):
     return ham,spam
 
 
-def make_cdf(ham,spam,similarity_name):
+def make_cdf(ham,spam,similarity_name,file_name=None):
     hist(ham, alpha=0.5, bins=100, normed=True, cumulative=True, histtype='stepfilled', label='Ham ('+str(len(ham))+')', color='b')
     hist(spam, alpha=0.5, bins=100, normed=True, cumulative=True, histtype='stepfilled', label='Spam ('+str(len(spam))+')', color='r')
     legend(loc=2)
     title("CDF of %s similarity for spam and ham" % (similarity_name))
     xlabel("%s similarity" % (similarity_name))
     ylabel("proportion")
-    savefig("%s_cdf.png" % similarity_name)
+    if file_name is None:
+        savefig("%s_cdf.png" % (similarity_name))
+    else:
+        savefig(file_name)
     show()
     clf()
 
