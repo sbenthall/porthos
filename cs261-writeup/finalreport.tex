@@ -469,6 +469,15 @@ We also anticipate using less sophisticated but similar latent semantic analysis
 as LSI in future work.
 
 Our conversion of tweet messages and HTML pages to 'documents' suitable for consumption in LDA
+required many preprocessing steps.
+Several of these steps were ad hoc.
+A more principled, information-theoretic approach to stop word detection and removal,
+for example, is within reach and could add robustness to our results.
+We may also be able to clean our data without losing valuable features such as URL
+components, which have been shown in other studies to be highly indicative of spam
+and which are likely very salient to users before they choose to click links.
+We could include these URL components as annotated 'words' in our derived documents
+in further work.
 
 We believe that link deception is an interesting area of security research because it
 it is a way in which cybercriminals engage in psychological warfare.
@@ -476,7 +485,7 @@ As an element of the spam arms race, link deception is a tool to circumvent
 the vigilance and intentions of human users.
 Our hope is that by identifying an algorithmic means of detecting deception,
 we can contribute towards mechanical prevention of that tactic.
-We can only speculate about implications for link deception as propagated
+We can only speculate about implications for link deception as performed
 by non-spammers.  Perhaps this is a death knell to the rickroll.
 
 \bibliography{collection.bib}
