@@ -440,6 +440,33 @@ for both ham and spam tweets.
 \end{figure}
 
 \subsection{A closer look at the data}
+We finally inspect a small random sample of tweets with low similarity and high similarity scores. Tables \ref{low-sim-ham} 
+and \ref{high-sim-spam} summarizes the cases we encountered, provides some diagnostic information and suggests 
+solutions when appropriate.
+
+\begin{table}[!h]\centering
+	\begin{tabular}{|p{1cm}|p{3cm}|p{3cm}|}
+	\hline
+	# of cases & description & solution \\
+	\hline
+	2 & HTML content is a website returned error page or  & - \\
+	\hline
+	\end{tabular}
+	\caption{Cases of ham tweets with similarity scores $< 0.1$.}
+	\label{low-sim-ham}
+\end{table}
+
+\begin{table}[!h]\centering
+	\begin{tabular}{|p{1cm}|p{3cm}|p{3cm}|}
+	\hline
+	# of cases & description & solution \\
+	\hline
+
+	\hline
+	\end{tabular}
+	\caption{Cases of spam tweets with similarity scores $>0.9$.}
+	\label{high-sim-spam}
+\end{table}
 
 \section{Discussion}
 
